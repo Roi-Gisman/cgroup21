@@ -292,9 +292,8 @@
                 isLogin = false;
             }
 
-            // כפתור יציאה
             logoutBtn.addEventListener("click", function () {
-                localStorage.removeItem("user"); // מוחק את המשתמש
+                localStorage.removeItem("user"); 
                 window.location.href = "index.html";
             });
         }
@@ -309,7 +308,7 @@
                 }
                 if (days() > 0) {
                     alert("Total price is " + (movie.priceToRent * days()));
-                    localStorage.removeItem("movieId"); // מוחק את המשתמש
+                    localStorage.removeItem("movieId"); 
                     window.location.href = `index.html`;
 
                 }
@@ -349,11 +348,11 @@
             const futureDateObj = new Date(dateRentStr);
 
             if (isNaN(futureDateObj.getTime())) {
-                return -1; // תאריך לא חוקי
+                return -1; 
             }
 
             if (futureDateObj <= currentDate) {
-                return -1; // תאריך עבר
+                return -1; 
             }
 
             const diffMs = futureDateObj - currentDate;
