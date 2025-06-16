@@ -1,0 +1,504 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* Container Styles */
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        /* Header Styles */
+        .title {
+            display: block;
+            margin: 0 auto 20px;
+            max-width: 300px;
+            height: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+
+        /* Navigation Styles */
+        .navigate {
+            background-color: #2c3e50;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+            .nav-buttons button {
+                background-color: #3498db;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+
+                .nav-buttons button:hover {
+                    background-color: #2980b9;
+                    transform: translateY(-2px);
+                }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+        }
+
+        #userGreeting {
+            font-size: 1.1em;
+        }
+
+        #logoutBtn, #editBtn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            #logoutBtn:hover, #editBtn:hover {
+                background-color: #c0392b;
+            }
+
+        #editBtn {
+            background-color: #2ecc71;
+            margin-left: 10px;
+        }
+
+            #editBtn:hover {
+                background-color: #27ae60;
+            }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        thead tr {
+            background-color: #3498db;
+            color: #ffffff;
+        }
+
+        tbody tr:nth-of-type(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Status Badges */
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            display: inline-block;
+            min-width: 70px;
+        }
+
+        .status-active {
+            background-color: #2ecc71;
+        }
+
+        .status-inactive {
+            background-color: #e74c3c;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+            min-width: 90px;
+        }
+
+        .btn-deactivate {
+            background-color: #f39c12;
+        }
+
+            .btn-deactivate:hover {
+                background-color: #d35400;
+            }
+
+        .btn-activate {
+            background-color: #27ae60;
+        }
+
+            .btn-activate:hover {
+                background-color: #229954;
+            }
+
+        /* Pagination Controls */
+        #pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .pagination-btn {
+            margin: 0 5px;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #3498db;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+            .pagination-btn:hover:not(:disabled) {
+                background-color: #3498db;
+                color: #fff;
+            }
+
+            .pagination-btn.active {
+                background-color: #3498db;
+                color: #fff;
+                border-color: #3498db;
+            }
+
+            .pagination-btn:disabled {
+                color: #aaa;
+                cursor: not-allowed;
+                background-color: #f9f9f9;
+            }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                width: 95%;
+            }
+
+            .navigate {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .user-section {
+                width: 100%;
+                justify-content: center;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .title {
+                max-width: 250px;
+            }
+
+            .action-btn {
+                padding: 6px 8px;
+                font-size: 0.8em;
+                min-width: 80px;
+            }
+
+            .status {
+                font-size: 0.8em;
+                min-width: 60px;
+            }
+
+            #pagination-controls {
+                gap: 3px;
+            }
+
+            .pagination-btn {
+                padding: 6px 12px;
+                margin: 0 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="scripts/ajaxCalls.js"></script>
+
+    
+    <div class="container">
+        <!-- logo -->
+        <span>
+            <img class="title" src="images/moviesWorld.png" />
+        </span>
+
+        <!-- Navigation -->
+        <div class="navigate">
+            <div class="nav-buttons">
+                <a href="index.html"><button class="Homebtn">Home</button></a>
+            </div>
+            <div class="user-section">
+                <span id="userGreeting">Hello guest 👋</span>
+                <button id="logoutBtn" style="display: none;">Logout</button>
+            </div>
+        </div>
+        <h1 style="text-align:center">User Management</h1>
+        <table id="user-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="user-table-body">
+                <!-- User rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+        <div id="pagination-controls"></div>
+    </div>
+    <script>
+        let user;
+        let usersServer;
+        $(document).ready(function () {
+            uploadUser();
+            getUsers();
+        });
+        function uploadUser() {
+            const greetingEl = document.getElementById("userGreeting");
+            const logoutBtn = document.getElementById("logoutBtn");
+            const editBtn = document.getElementById("editBtn");
+
+            const userStr = localStorage.getItem("user");
+            if (userStr) {
+                user = JSON.parse(userStr);
+                greetingEl.textContent = `Hello ${user.name} 👋`;
+                logoutBtn.style.display = "inline-block";
+                editBtn.style.display = "inline-block";
+                isLogin = true;
+
+                // כפתור עריכה
+                editBtn.addEventListener("click", function () {
+                    window.location.href = "editProfilePage.html";
+                });
+
+            } else {
+                greetingEl.textContent = "Hello guest 👋";
+                logoutBtn.style.display = "none";
+                editBtn.style.display = "none";
+                isLogin = false;
+            }
+
+            // כפתור יציאה
+            logoutBtn.addEventListener("click", function () {
+                localStorage.removeItem("user"); // מוחק את המשתמש
+                window.location.href = "index.html";
+            });
+        
+
+            const url = `https://proj.ruppin.ac.il/cgroup21/test2/tar1/api/users/${user.id}`;
+
+            ajaxCall("GET", url, null,
+                function (userData) {
+                    user = userdata;
+                },
+                function (err) {
+                    alert("You need to log in first");
+                    window.location.href = "index.html";
+                    return;
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Generate a list of users for demonstration
+            const users;
+            const url = `https://proj.ruppin.ac.il/cgroup21/test2/tar1/api/users/getAllUsers}`;
+            ajaxCall("GET", url, null, SCB, ECB);
+            function SCB(res) {
+                if (res == null) {
+                    console.log("Users upload is failed");
+                    return;
+                }
+                users= res;
+            }
+
+            function ECB(err) {
+                console.log("Users upload is failed");
+            }
+
+            const userTableBody = document.getElementById('user-table-body');
+            const paginationControls = document.getElementById('pagination-controls');
+            const usersPerPage = 15;
+            let currentPage = 1;
+
+            function renderUsers() {
+                userTableBody.innerHTML = ''; // Clear existing rows
+                const startIndex = (currentPage - 1) * usersPerPage;
+                const endIndex = startIndex + usersPerPage;
+                const paginatedUsers = users.slice(startIndex, endIndex);
+
+                paginatedUsers.forEach(userData => {
+                    const row = document.createElement('tr');
+
+                    const statusText = userData.active ? 'Active' : 'Inactive';
+                    const statusClass = userData.active ? 'status-active' : 'status-inactive';
+                    const actionText = userData.active ? 'Deactivate' : 'Activate';
+                    const actionClass = userData.active ? 'btn-deactivate' : 'btn-activate';
+
+                    row.innerHTML = `
+                            <td>${userData.id}</td>
+                            <td>${userData.name}</td>
+                            <td>${userData.email}</td>
+                            <td><span class="status ${statusClass}">${statusText}</span></td>
+                            <td><button class="action-btn ${actionClass}" data-userid="${userData.id}">${actionText}</button></td>
+                        `;
+
+                    userTableBody.appendChild(row);
+                });
+            }
+
+            function setupPagination() {
+                paginationControls.innerHTML = '';
+                const pageCount = Math.ceil(users.length / usersPerPage);
+
+                // Previous Button
+                const prevButton = document.createElement('button');
+                prevButton.innerText = 'Previous';
+                prevButton.classList.add('pagination-btn');
+                if (currentPage === 1) {
+                    prevButton.disabled = true;
+                }
+                prevButton.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderUsers();
+                        setupPagination();
+                    }
+                });
+                paginationControls.appendChild(prevButton);
+
+                // Page Number Buttons
+                for (let i = 1; i <= pageCount; i++) {
+                    const pageButton = document.createElement('button');
+                    pageButton.innerText = i;
+                    pageButton.classList.add('pagination-btn');
+                    if (i === currentPage) {
+                        pageButton.classList.add('active');
+                    }
+                    pageButton.addEventListener('click', () => {
+                        currentPage = i;
+                        renderUsers();
+                        setupPagination();
+                    });
+                    paginationControls.appendChild(pageButton);
+                }
+
+                // Next Button
+                const nextButton = document.createElement('button');
+                nextButton.innerText = 'Next';
+                nextButton.classList.add('pagination-btn');
+                if (currentPage === pageCount) {
+                    nextButton.disabled = true;
+                }
+                nextButton.addEventListener('click', () => {
+                    if (currentPage < pageCount) {
+                        currentPage++;
+                        renderUsers();
+                        setupPagination();
+                    }
+                });
+                paginationControls.appendChild(nextButton);
+            }
+
+            userTableBody.addEventListener('click', (event) => {
+                if (event.target.classList.contains('action-btn')) {
+                    const userId = parseInt(event.target.dataset.userid, 10);
+                    const dataUser = users.find(u => u.id === userId);
+
+                    if (dataUser) {
+                        dataUser.active = !dataUser.active;
+                        renderUsers(); // Re-render the table to reflect the change
+                    }
+                }
+            });
+
+            // Initial render
+            renderUsers();
+            setupPagination();
+        });
+    </script>
+</body>
+</html>

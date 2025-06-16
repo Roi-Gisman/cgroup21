@@ -1,0 +1,368 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Movie</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        span img.title {
+            display: block;
+            margin: 0 auto;
+            max-width: 300px;
+            height: auto;
+            padding: 20px 0;
+        }
+
+        /* Navigation Styles */
+        .navigate {
+            background-color: #2c3e50;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+            .navigate button {
+                background-color: #3498db;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+
+                .navigate button:hover {
+                    background-color: #2980b9;
+                    transform: translateY(-2px);
+                }
+
+        /* Form Container */
+        .divForm {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Form Styles */
+        #movieForm {
+            width: 100%;
+        }
+
+            #movieForm h1 {
+                color: #2c3e50;
+                text-align: center;
+                margin-bottom: 25px;
+                font-size: 1.8em;
+            }
+
+            #movieForm table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            #movieForm td {
+                padding: 12px 8px;
+                vertical-align: top;
+            }
+
+                #movieForm td:first-child {
+                    width: 25%;
+                    font-weight: 500;
+                    color: #2c3e50;
+                }
+
+            /* Input Fields */
+            #movieForm input[type="text"],
+            #movieForm input[type="number"],
+            #movieForm input[type="date"],
+            #movieForm input[type="email"],
+            #movieForm textarea,
+            #movieForm select {
+                width: 100%;
+                padding: 12px 15px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 1em;
+                box-sizing: border-box;
+                transition: all 0.3s ease;
+            }
+
+            #movieForm textarea {
+                min-height: 80px;
+                resize: vertical;
+            }
+
+                #movieForm input[type="text"]:focus,
+                #movieForm input[type="number"]:focus,
+                #movieForm input[type="date"]:focus,
+                #movieForm textarea:focus,
+                #movieForm select:focus {
+                    border-color: #3498db;
+                    outline: none;
+                    box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+                }
+
+            /* Select Multiple */
+            #movieForm select[multiple] {
+                height: 120px;
+                padding: 5px;
+            }
+
+                #movieForm select[multiple] option {
+                    padding: 8px 12px;
+                }
+
+            /* Checkbox */
+            #movieForm input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+                accent-color: #9b59b6;
+            }
+
+            /* Datalist */
+            #movieForm datalist {
+                width: 100%;
+            }
+
+            /* Submit Button */
+            #movieForm input[type="submit"] {
+                background-color: #9b59b6;
+                color: white;
+                border: none;
+                padding: 12px 25px;
+                font-size: 1.1em;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: block;
+                margin: 20px auto 0;
+                width: 100%;
+                max-width: 250px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+                #movieForm input[type="submit"]:hover {
+                    background-color: #8e44ad;
+                    transform: translateY(-2px);
+                }
+
+            /* Required Field Indicator */
+            #movieForm td:first-child:has(+ td input[required])::after {
+                content: " *";
+                color: #e74c3c;
+            }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .divForm {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .navigate {
+                gap: 10px;
+                padding: 10px;
+            }
+
+                .navigate button {
+                    padding: 8px 15px;
+                }
+
+            #movieForm td:first-child {
+                width: 35%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            span img.title {
+                max-width: 250px;
+            }
+
+            .divForm {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            #movieForm td {
+                display: block;
+                width: 100%;
+                padding: 8px 0;
+            }
+
+                #movieForm td:first-child {
+                    width: 100%;
+                    padding-bottom: 5px;
+                }
+
+            #movieForm input[type="submit"] {
+                max-width: 100%;
+            }
+
+            #movieForm select[multiple] {
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- logo -->
+    <span>
+        <img class="title" src="images/moviesWorld.png" />
+    </span>
+
+    <!-- Navigation -->
+    <div class="navigate">
+        <a href="index.html"><button class="Homebtn">Home</button></a>
+        <a href="myMovies.html"><button class="MyMoviesbtn">My Movies</button></a>
+        <a href="loginPage.html"><button class="Loginbtn">Login</button></a>
+    </div>
+    <div class="divForm">
+        <form id="movieForm">
+            <table>
+                <tr><td colspan="2"><h1>Add Movie</h1></td></tr>
+                <tr>
+                    <td>URL</td>
+                    <td><textarea id="url" rows="2"></textarea></td>
+                </tr>
+                <tr>
+                    <td>Primary Title </td>
+                    <td><input type="text" id="primaryTitle" required /></td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td><textarea id="description" rows="4"></textarea></td>
+                </tr>
+                <tr>
+                    <td>Primary Image URL </td>
+                    <td><input type="text" id="primaryImage" required /></td>
+                </tr>
+                <tr>
+                    <td>Year </td>
+                    <td><input type="number" id="year" required /></td>
+                </tr>
+                <tr>
+                    <td>Release Date *</td>
+                    <td><input type="date" id="releaseDate" required /></td>
+                </tr>
+                <tr>
+                    <td>Language </td>
+                    <td>
+                        <input list="languages" id="language" required />
+                        <datalist id="languages">
+                            <option value="English">
+                            <option value="French">
+                            <option value="Spanish">
+                            <option value="German">
+                            <option value="Hebrew">
+                        </datalist>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Budget</td>
+                    <td><input type="number" id="budget" min="100000" /></td>
+                </tr>
+
+                <tr>
+                    <td>Gross Worldwide</td>
+                    <td><input type="number" id="grossWorldwide" value="0.0" /></td>
+                </tr>
+                <tr>
+                    <td>Genres (multi-select)</td>
+                    <td>
+                        <select id="genres" multiple>
+                            <option value="Action">Action</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Is Adult?</td>
+                    <td><input type="checkbox" id="isAdult" /></td>
+                </tr>
+                <tr>
+                    <td>Runtime (Minutes) </td>
+                    <td><input type="number" id="runtimeMinutes" min="0" required /></td>
+                </tr>
+                <tr>
+                    <td>Average Rating</td>
+                    <td><input type="number" id="averageRating" step="0.1" min="0" max="10" value="0" /></td>
+                </tr>
+                <tr>
+                    <td>Number of votes</td>
+                    <td><input type="number" id="numVote" min="0" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="submit" value="Add Movie" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="scripts/ajaxCalls.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            $("#movieForm").submit(sendToServer);
+
+        })
+
+        function sendToServer(event) {
+            event.preventDefault();
+
+            const movie = {
+                url: $("#url").val(),
+                primaryTitle: $("#primaryTitle").val(),
+                description: $("#description").val(),
+                primaryImage: $("#primaryImage").val(),
+                year: parseInt($("#year").val()),
+                releaseDate: $("#releaseDate").val(),
+                language: $("#language").val(),
+                budget: parseInt($("#budget").val()) || 0,
+                grossWorldwide: parseFloat($("#grossWorldwide").val()) || 0.0,
+                genres: ($("#genres").val() || []).join(", "),
+                isAdult: $("#isAdult").is(":checked"),
+                runtimeMinutes: parseInt($("#runtimeMinutes").val()),
+                averageRating: parseFloat($("#averageRating").val()) || 0.0,
+                numVote: parseInt($("#numVote").val()) || 0
+            };
+
+            console.log(movie);
+            const url = "https://proj.ruppin.ac.il/cgroup21/test2/tar1/api/movies";
+            ajaxCall("POST", url, JSON.stringify(movie), SCB, ECB);
+        }
+
+
+        function SCB(res) {
+            alert("The movie added");
+            window.location.href = `index.html/email/${userEmail}/password/${userPassword}`;
+            return true;
+        }
+        function ECB(err) {
+            alert(err);
+            return false;
+        }
+
+    </script>
+</body>
+</html>
