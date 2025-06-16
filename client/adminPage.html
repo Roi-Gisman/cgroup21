@@ -296,7 +296,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="scripts/ajaxCalls.js"></script>
 
-    
+
     <div class="container">
         <!-- logo -->
         <span>
@@ -307,10 +307,13 @@
         <div class="navigate">
             <div class="nav-buttons">
                 <a href="index.html"><button class="Homebtn">Home</button></a>
+                <a href="myMovies.html"><button class="MyMoviesbtn">My Movies</button></a>
+                <a href="loginPage.html"><button class="Loginbtn">Login</button></a>
             </div>
             <div class="user-section">
                 <span id="userGreeting">Hello guest 👋</span>
                 <button id="logoutBtn" style="display: none;">Logout</button>
+                <button id="editBtn" style="display: none;">Edit my profile</button>
             </div>
         </div>
         <h1 style="text-align:center">User Management</h1>
@@ -332,11 +335,69 @@
     </div>
     <script>
         let user;
+        let users = []; 
         let usersServer;
+
         $(document).ready(function () {
             uploadUser();
-            getUsers();
+            fetchUsers();
         });
+
+        function fetchUsers() {
+            const url = `https://localhost:7260/api/users/allUsers`;
+            ajaxCall("GET", url, null,
+                function SCB(res) {
+                    if (res == null) {
+                        console.log("Users upload is failed");
+                        return;
+                    }
+                    users = res;
+                    console.log(res);
+                    renderUsers(); 
+                    setupPagination();
+                },
+                function ECB(err) {
+                    console.log("Users upload is failed");
+                }
+            );
+        }
+        function updateUserStatus(userId, newStatus) {
+            const getUrl = `https://localhost:7260/api/users/getById?id=${userId}`;
+
+            ajaxCall("GET", getUrl, null,
+                function SCB_Get(userToUpdate) {
+                    if (!userToUpdate) {
+                        console.error("User not found");
+                        return;
+                    }
+
+                    const putUrl = `https://localhost:7260/api/users/${userId}`;
+                    const dataToSend = {
+                        id: userToUpdate.id,
+                        name: userToUpdate.name,
+                        email: userToUpdate.email,
+                        password: userToUpdate.password,
+                        active: newStatus
+                    };
+
+                    console.log("Full user update:", dataToSend);
+
+                    ajaxCall("PUT", putUrl, JSON.stringify(dataToSend),
+                        function SCB_Put(res) {
+                            console.log("Full update successful:", res);
+                            fetchUsers();
+                        },
+                        function ECB_Put(err) {
+                            console.error("Full update failed:", err);
+                        }
+                    );
+                },
+                function ECB_Get(err) {
+                    console.error("Failed to fetch user:", err);
+                }
+            );
+        }
+
         function uploadUser() {
             const greetingEl = document.getElementById("userGreeting");
             const logoutBtn = document.getElementById("logoutBtn");
@@ -350,11 +411,9 @@
                 editBtn.style.display = "inline-block";
                 isLogin = true;
 
-                // כפתור עריכה
                 editBtn.addEventListener("click", function () {
                     window.location.href = "editProfilePage.html";
                 });
-
             } else {
                 greetingEl.textContent = "Hello guest 👋";
                 logoutBtn.style.display = "none";
@@ -362,142 +421,122 @@
                 isLogin = false;
             }
 
-            // כפתור יציאה
             logoutBtn.addEventListener("click", function () {
-                localStorage.removeItem("user"); // מוחק את המשתמש
+                localStorage.removeItem("user");
                 window.location.href = "index.html";
             });
-        
-
-            const url = `https://proj.ruppin.ac.il/cgroup21/test2/tar1/api/users/${user.id}`;
-
-            ajaxCall("GET", url, null,
-                function (userData) {
-                    user = userdata;
-                },
-                function (err) {
-                    alert("You need to log in first");
-                    window.location.href = "index.html";
-                    return;
-                });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Generate a list of users for demonstration
-            const users;
-            const url = `https://proj.ruppin.ac.il/cgroup21/test2/tar1/api/users/getAllUsers}`;
-            ajaxCall("GET", url, null, SCB, ECB);
-            function SCB(res) {
-                if (res == null) {
-                    console.log("Users upload is failed");
-                    return;
-                }
-                users= res;
-            }
-
-            function ECB(err) {
-                console.log("Users upload is failed");
-            }
-
+        function renderUsers() {
             const userTableBody = document.getElementById('user-table-body');
-            const paginationControls = document.getElementById('pagination-controls');
+            userTableBody.innerHTML = ''; // Clear existing rows
+
+            if (!users || users.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" style="text-align:center">No users found</td>`;
+                userTableBody.appendChild(row);
+                return;
+            }
+
             const usersPerPage = 15;
-            let currentPage = 1;
+            const startIndex = (currentPage - 1) * usersPerPage;
+            const endIndex = startIndex + usersPerPage;
+            const paginatedUsers = users.slice(startIndex, endIndex);
 
-            function renderUsers() {
-                userTableBody.innerHTML = ''; // Clear existing rows
-                const startIndex = (currentPage - 1) * usersPerPage;
-                const endIndex = startIndex + usersPerPage;
-                const paginatedUsers = users.slice(startIndex, endIndex);
+            paginatedUsers.forEach(userData => {
+                const row = document.createElement('tr');
 
-                paginatedUsers.forEach(userData => {
-                    const row = document.createElement('tr');
+                const statusText = userData.active ? 'Active' : 'Inactive';
+                const statusClass = userData.active ? 'status-active' : 'status-inactive';
+                const actionText = userData.active ? 'Deactivate' : 'Activate';
+                const actionClass = userData.active ? 'btn-deactivate' : 'btn-activate';
 
-                    const statusText = userData.active ? 'Active' : 'Inactive';
-                    const statusClass = userData.active ? 'status-active' : 'status-inactive';
-                    const actionText = userData.active ? 'Deactivate' : 'Activate';
-                    const actionClass = userData.active ? 'btn-deactivate' : 'btn-activate';
+                row.innerHTML = `
+                    <td>${userData.id}</td>
+                    <td>${userData.name}</td>
+                    <td>${userData.email}</td>
+                    <td><span class="status ${statusClass}">${statusText}</span></td>
+                    <td><button class="action-btn ${actionClass}" data-userid="${userData.id}">${actionText}</button></td>
+                `;
 
-                    row.innerHTML = `
-                            <td>${userData.id}</td>
-                            <td>${userData.name}</td>
-                            <td>${userData.email}</td>
-                            <td><span class="status ${statusClass}">${statusText}</span></td>
-                            <td><button class="action-btn ${actionClass}" data-userid="${userData.id}">${actionText}</button></td>
-                        `;
+                userTableBody.appendChild(row);
+            });
+        }
 
-                    userTableBody.appendChild(row);
-                });
+        function setupPagination() {
+            const paginationControls = document.getElementById('pagination-controls');
+            paginationControls.innerHTML = '';
+
+            if (!users || users.length === 0) return;
+
+            const usersPerPage = 15;
+            const pageCount = Math.ceil(users.length / usersPerPage);
+
+            // Previous Button
+            const prevButton = document.createElement('button');
+            prevButton.innerText = 'Previous';
+            prevButton.classList.add('pagination-btn');
+            if (currentPage === 1) {
+                prevButton.disabled = true;
             }
-
-            function setupPagination() {
-                paginationControls.innerHTML = '';
-                const pageCount = Math.ceil(users.length / usersPerPage);
-
-                // Previous Button
-                const prevButton = document.createElement('button');
-                prevButton.innerText = 'Previous';
-                prevButton.classList.add('pagination-btn');
-                if (currentPage === 1) {
-                    prevButton.disabled = true;
-                }
-                prevButton.addEventListener('click', () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        renderUsers();
-                        setupPagination();
-                    }
-                });
-                paginationControls.appendChild(prevButton);
-
-                // Page Number Buttons
-                for (let i = 1; i <= pageCount; i++) {
-                    const pageButton = document.createElement('button');
-                    pageButton.innerText = i;
-                    pageButton.classList.add('pagination-btn');
-                    if (i === currentPage) {
-                        pageButton.classList.add('active');
-                    }
-                    pageButton.addEventListener('click', () => {
-                        currentPage = i;
-                        renderUsers();
-                        setupPagination();
-                    });
-                    paginationControls.appendChild(pageButton);
-                }
-
-                // Next Button
-                const nextButton = document.createElement('button');
-                nextButton.innerText = 'Next';
-                nextButton.classList.add('pagination-btn');
-                if (currentPage === pageCount) {
-                    nextButton.disabled = true;
-                }
-                nextButton.addEventListener('click', () => {
-                    if (currentPage < pageCount) {
-                        currentPage++;
-                        renderUsers();
-                        setupPagination();
-                    }
-                });
-                paginationControls.appendChild(nextButton);
-            }
-
-            userTableBody.addEventListener('click', (event) => {
-                if (event.target.classList.contains('action-btn')) {
-                    const userId = parseInt(event.target.dataset.userid, 10);
-                    const dataUser = users.find(u => u.id === userId);
-
-                    if (dataUser) {
-                        dataUser.active = !dataUser.active;
-                        renderUsers(); // Re-render the table to reflect the change
-                    }
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderUsers();
+                    setupPagination();
                 }
             });
+            paginationControls.appendChild(prevButton);
 
-            // Initial render
-            renderUsers();
-            setupPagination();
+            // Page Number Buttons
+            for (let i = 1; i <= pageCount; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.innerText = i;
+                pageButton.classList.add('pagination-btn');
+                if (i === currentPage) {
+                    pageButton.classList.add('active');
+                }
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    renderUsers();
+                    setupPagination();
+                });
+                paginationControls.appendChild(pageButton);
+            }
+
+            // Next Button
+            const nextButton = document.createElement('button');
+            nextButton.innerText = 'Next';
+            nextButton.classList.add('pagination-btn');
+            if (currentPage === pageCount) {
+                nextButton.disabled = true;
+            }
+            nextButton.addEventListener('click', () => {
+                if (currentPage < pageCount) {
+                    currentPage++;
+                    renderUsers();
+                    setupPagination();
+                }
+            });
+            paginationControls.appendChild(nextButton);
+        }
+
+        let currentPage = 1;
+
+        document.getElementById('user-table-body').addEventListener('click', (event) => {
+            if (event.target.classList.contains('action-btn')) {
+                const userId = parseInt(event.target.dataset.userid, 10);
+                const dataUser = users.find(u => u.id === userId);
+
+                if (dataUser) {
+                    const newStatus = !dataUser.active; 
+
+                    dataUser.active = newStatus;
+                    renderUsers();
+
+                    updateUserStatus(userId, newStatus);
+                }
+            }
         });
     </script>
 </body>

@@ -66,7 +66,7 @@
             font-size: 1.1em;
         }
 
-        #logoutBtn, #editBtn {
+        #logoutBtn, #editBtn, #adminPageBtn {
             background-color: #e74c3c;
             color: white;
             border: none;
@@ -99,7 +99,14 @@
             text-align: center;
             margin-bottom: 30px;
         }
+        #adminPageBtn {
+            background-color: #f3d9fa;
+            color: #862e9c;
+        }
 
+            #adminPageBtn:hover {
+                background-color: #eebefa;
+            }
         #loadMovies {
             background-color: #9b59b6;
             color: white;
@@ -425,7 +432,7 @@
 <body>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="scripts/ajaxCalls.js"></script>
-
+    <script src="movies.js"></script>
     <!-- logo -->
     <span>
         <img class="title" src="images/moviesWorld.png" />
@@ -442,6 +449,7 @@
             <span id="userGreeting">Hello guest 👋</span>
             <button id="logoutBtn" style="display: none;">Logout</button>
             <button id="editBtn" style="display: none;">Edit my profile</button>
+            <button id="adminPageBtn" style="display: none;">Admin</button>
         </div>
     </div>
 
@@ -473,12 +481,42 @@
         </div>
         <div class="moviesDetail"></div>
     </div>
+
     <!-- Scripts -->
     <script>
         //upload site
         var moviesServer;
         var user;
         var isLogin;
+        //for (let movie of movies) {
+        //    const url = `https://localhost:7260/api/movies`;
+        //    const dataMovie = {
+        //        url: movie.url || "",
+        //        primaryTitle: movie.primaryTitle || "",
+        //        description: movie.description || "",
+        //        primaryImage: movie.primaryImage || "",
+        //        year: movie.startYear || 1900,
+        //        releaseDate: movie.releaseDate || "1900-01-01",
+        //        language: movie.language || "Unknown",
+        //        budget: movie.budget || 0,
+        //        grossWorldwide: movie.grossWorldwide || 0,
+        //        genres: Array.isArray(movie.genres) ? movie.genres.join(",") : "",
+        //        isAdult: movie.isAdult || false,
+        //        runtimeMinutes: movie.runtimeMinutes || 0,
+        //        averageRating: movie.averageRating || 0,
+        //        numVotes: movie.numVotes || 0
+        //    }
+        //    console.log(movie);
+        //    console.log(dataMovie);
+        //    ajaxCall("POST", url, JSON.stringify(dataMovie), SCB, ECB);
+        //    function SCB(res) {
+        //        console.log(res);
+        //    }
+        //    function ECB(res) {
+        //        console.log("moveis up load is failed");
+
+        //    }
+        //}
         $(document).ready(function () {
             uploadUser();
             $("#loadMovies").click(loadMoviesFromServer);
@@ -486,6 +524,7 @@
             $(".moviesDetail").on("click", ".deleteMovieBTN", delMovieServer);
             $("#btnTitle").on("click", searchTitle);
             $("#btnRangeDate").on("click", searchStartDate);
+
         });
 
 
@@ -494,6 +533,7 @@
             const greetingEl = document.getElementById("userGreeting");
             const logoutBtn = document.getElementById("logoutBtn");
             const editBtn = document.getElementById("editBtn");
+            const adminPageBtn = document.getElementById("adminPageBtn");
 
             const userStr = localStorage.getItem("user");
             if (userStr) {
@@ -501,23 +541,28 @@
                 greetingEl.textContent = `Hello ${user.name} 👋`;
                 logoutBtn.style.display = "inline-block";
                 editBtn.style.display = "inline-block";
+                adminPageBtn.style.display = "inline-block";
+
                 isLogin = true;
 
-                // כפתור עריכה
                 editBtn.addEventListener("click", function () {
                     window.location.href = "editProfilePage.html";
                 });
 
-            } else {
+                adminPageBtn.addEventListener("click", function () {
+                    window.location.href = "adminPage.html";
+                });
+
+            }
+            else {
                 greetingEl.textContent = "Hello guest 👋";
                 logoutBtn.style.display = "none";
                 editBtn.style.display = "none";
                 isLogin = false;
             }
 
-            // כפתור יציאה
             logoutBtn.addEventListener("click", function () {
-                localStorage.removeItem("user"); // מוחק את המשתמש
+                localStorage.removeItem("user");
                 window.location.href = "index.html";
             });
         }
@@ -805,17 +850,6 @@
                 setupPagination();
             }
         }
-        //add movies to server
-        function loadSCB(res) {
-            console.log("success");
-            return true;
-        }
-
-        function loadECB(res) {
-            console.log("error");
-            return false;
-        }
-
         function sendToServer() {
             const newMovie = JSON.parse(this.dataset.movie);
             localStorage.setItem("movieId", JSON.stringify(newMovie.id));
@@ -829,7 +863,6 @@
 
             ajaxCall("DELETE", url, null, delSCB, delECB);
             function delSCB(res) {
-                loadMovies();
                 window.location.reload();
                 return true;
             }
@@ -889,41 +922,6 @@
             alert("error in the search function");
             console.error(err);
         }
-
-        
-        
-
-        //for (let movie of movies) {
-        //    //const url = `https://proj.ruppin.ac.il/cgroup21/test2/tar1/api/movies`;
-        //    const url = `https://localhost:7260/api/movies`;
-        //    const dataMovie = {
-        //        url: movie.url || "",
-        //        primaryTitle: movie.primaryTitle || "",
-        //        description: movie.description || "",
-        //        primaryImage: movie.primaryImage || "",
-        //        year: movie.startYear || 1900,
-        //        releaseDate: movie.releaseDate || "1900-01-01",
-        //        language: movie.language || "Unknown",
-        //        budget: movie.budget || 0,
-        //        grossWorldwide: movie.grossWorldwide || 0,
-        //        genres: Array.isArray(movie.genres) ? movie.genres.join(",") : "",
-        //        isAdult: movie.isAdult || false,
-        //        runtimeMinutes: movie.runtimeMinutes || 0,
-        //        averageRating: movie.averageRating || 0,
-        //        numVotes: movie.numVotes || 0,
-        //        priceToRent:movie.priceToRent
-        //    }
-        //    console.log(movie);
-        //    console.log(dataMovie);
-        //    ajaxCall("POST", url, JSON.stringify(dataMovie), SCB, ECB);
-        //    function SCB(res) {
-        //        console.log(res);
-        //    }
-        //    function ECB(res) {
-        //        console.log("moveis up load is failed");
-
-        //    }
-        
 
     </script>
 

@@ -1,4 +1,4 @@
-﻿const movies = [
+﻿var movies = [
     {
         "id": "tt0111161",
         "url": "https://www.imdb.com/title/tt0111161/",
