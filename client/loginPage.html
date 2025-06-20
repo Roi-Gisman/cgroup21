@@ -217,6 +217,12 @@
         }
 
         function SCB(res) {
+            if (res.id == 0 || res.name == null || res.email == null || res.password == null || res.active == false) {
+                console.error("Login error:", err);
+                alert("Login failed please try again.");
+                $("#passwordTB").val("");
+                return;
+            }
             localStorage.setItem("user", JSON.stringify(res));
             window.location.href = "index.html";
         }
@@ -255,11 +261,6 @@
                 <tr>
                     <td>Password:</td>
                     <td><input type="password" id="passwordTB" required /></td>
-                </tr>
-                <tr>
-                    <td>
-                        *password need to 
-                    </td>
                 </tr>
                 <tr>
                     <td>

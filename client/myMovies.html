@@ -396,6 +396,7 @@
         var moviesServer;
         var user;
         var isLogin;
+        var movieData;
 
         $(document).ready(function () {
             uploadUser();
@@ -409,11 +410,10 @@
         });
         function delFromCart() {
             const movie = $(this).data("movie");
-            const otherUserId = $("#userInput").val();
+            //const otherUserId = $("#userInput").val();
+            const url = `https://localhost:7260/api/movies/deleteFromCart/userId/${user.Id}/movieId/${movie.id}`;
 
-            const url = `https://localhost:7260/api/movies/deleteFromCart/userId/${otherUserId}/movieId/${savedMovieIds}`;
-
-            ajaxCall("GET", url, null,
+            ajaxCall("DELETE", url, null,
                 function (moviesData) {
                     console.log("The movie deleted from the cart");
                 },
@@ -459,7 +459,6 @@
                 isLogin = false;
             }
 
-            // כפתור יציאה
             logoutBtn.addEventListener("click", function () {
                 localStorage.removeItem("user"); 
                 window.location.href = "index.html";
@@ -626,7 +625,7 @@
 
                     //after click on button the user get dropdown of all users
                     sendMovieToUserBTN.addEventListener("click", function () {
-                        const url = `https://proj.ruppin.ac.il/cgroup21/test2/tar1/api/users/allUsers`;
+                        const url = `https://localhost:7260/api/users/allUsers`;
 
                         ajaxCall("GET", url, null,
                             function (users) {
@@ -651,25 +650,48 @@
                         const selectedUserId = select.value;
                         const selectedUserName = select.options[select.selectedIndex].text;
                         const movieData = $(sendMovieToUserBTN).data("movie");
-
-                        const url = `https://proj.ruppin.ac.il/cgroup21/test2/tar1/api/movies/insertMovieToCart/userId/${selectedUserId}/movieId/${movieData.id}`;
-
-                        ajaxCall("POST", url, null,
+                        const urlGetMovie = `https://localhost:7260/api/movies/getDetailRent/userId/${user.id}/movieId/${movieData.id}`;
+                        ajaxCall("GET", urlGetMovie, null,
                             function (response) {
-                                alert(`Movie successfully sent to ${selectedUserName}!`);
-                                userSelectionForm.style.display = "none";
+                                const dataToSend = {
+                                    userId: selectedUserId,
+                                    movieId: movieData.id,
+                                    rentEnd: response.rentEnd,
+                                    totalPrice: response.totalPrice
+                                }
+                                const urlInsertMovie = `https://localhost:7260/api/movies/insertMovieToCart`;
+
+                                ajaxCall("POST", urlInsertMovie, JSON.stringify(dataToSend),
+                                    function (response) {
+                                        alert(`Movie successfully sent to ${selectedUserName}!`);
+                                        userSelectionForm.style.display = "none";
+                                        const urlDeleteMovie = `https://localhost:7260/api/movies/deleteFromCart/userId/${user.Id}/movieId/${movieData.id}`;
+
+                                        ajaxCall("DELETE", urlDeleteMovie, null,
+                                            function (moviesData) {
+                                                console.log("The movie deleted from the cart");
+                                            },
+                                            function (err) {
+                                                console.log("the movie isn't deleted");
+                                            });
+                                        window.location.reload();
+                                    },
+                                    function (error) {
+                                        console.error("Error sending movie:", error);
+                                        alert("Failed to send movie. Please try again.");
+                                    }
+                                );
                             },
                             function (error) {
                                 console.error("Error sending movie:", error);
                                 alert("Failed to send movie. Please try again.");
                             }
                         );
-                        delFromCart();
                     });
 
                     moviesDetail.appendChild(movieCube);
                 });
-                document.body.appendChild(mainDivMovies);
+                document.body.appendChild(moviesDetail);
 
             }
 

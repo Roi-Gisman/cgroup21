@@ -299,15 +299,23 @@
         }
 
         function rentMovie() {
-            const url = `https://localhost:7260/api/movies/insertMovieToCart/userId/${user.id}/movieId/${movieId}`;
-            ajaxCall("Post", url, null, SCB, ECB);
+            const totalPriceRent = movie.priceToRent * days();
+            const rentEndDateValue = $("#dateEndTB").val();
+            const dataToSend = {
+                userId: user.id,            // מגיע מהאובייקט user.id
+                movieId: movieId,           // מגיע מהמשתנה movieId
+                rentEnd: rentEndDateValue,  // מגיע משדה התאריך בפורמט "YYYY-MM-DD"
+                totalPrice: totalPriceRent  // מגיע מהחישוב
+            };
+            const url = `https://localhost:7260/api/movies/insertMovieToCart`;
+            ajaxCall("POST", url, JSON.stringify(dataToSend), SCB, ECB);
             function SCB(res) {
                 if (res == null) {
                     alert("Rent is failed.");
                     return;
                 }
                 if (days() > 0) {
-                    alert("Total price is " + (movie.priceToRent * days()));
+                    alert("Total price is " + totalPriceRent);
                     localStorage.removeItem("movieId"); 
                     window.location.href = `index.html`;
 
