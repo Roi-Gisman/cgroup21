@@ -99,6 +99,7 @@
             text-align: center;
             margin-bottom: 30px;
         }
+
         #adminPageBtn {
             background-color: #f3d9fa;
             color: #862e9c;
@@ -107,6 +108,7 @@
             #adminPageBtn:hover {
                 background-color: #eebefa;
             }
+
         #loadMovies {
             background-color: #9b59b6;
             color: white;
@@ -164,9 +166,19 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 30px;
             display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .search-cube {
+            display: flex;
             flex-wrap: wrap;
             gap: 15px;
             align-items: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            border: 1px solid #eee;
         }
 
         .searchBy {
@@ -180,6 +192,7 @@
                 border: 1px solid #ddd;
                 border-radius: 4px;
                 font-size: 1em;
+                min-width: 200px;
             }
 
             .searchBy button {
@@ -190,6 +203,7 @@
                 border-radius: 4px;
                 cursor: pointer;
                 transition: all 0.3s ease;
+                white-space: nowrap;
             }
 
                 .searchBy button:hover {
@@ -380,6 +394,11 @@
                 align-items: stretch;
             }
 
+            .search-cube {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
             .searchBy {
                 flex-direction: column;
                 align-items: stretch;
@@ -388,6 +407,7 @@
             .moviesDetail {
                 grid-template-columns: 1fr;
             }
+
             .addMovie {
                 margin-left: 0;
                 margin-top: 15px;
@@ -402,6 +422,7 @@
             .mainDiv {
                 padding: 0 15px;
             }
+
             .nav-buttons {
                 flex-direction: column;
             }
@@ -422,9 +443,14 @@
                 padding: 10px 20px;
                 font-size: 1em;
             }
+
             #addMovieBTN {
                 padding: 10px 20px;
                 font-size: 1em;
+            }
+
+            .searchBy input {
+                min-width: 100%;
             }
         }
     </style>
@@ -461,24 +487,29 @@
         <div class="addMovie" style="display:none">
             <button id="addMovieBTN">+ Add Movie</button>
         </div>
-        <div class="advencedSearch" style="display: none;">
-            <span class="searchBy">
-                <input type="text" class="titleText" placeholder="search by title">
-            </span>
-            <span class="searchBy">
-                <button id="btnTitle">search by title</button>
-            </span>
-            <span class="searchBy">
-                <input type="date" class="starDateText" placeholder="search by start date">
-            </span>
 
+        <!-- Search Cubes -->
+        <div class="search-cube" style="display:none">
             <span class="searchBy">
-                <input type="date" class="endDateText" placeholder="search by end date">
+                <input type="text" class="titleText" placeholder="Search by title">
             </span>
             <span class="searchBy">
-                <button id="btnRangeDate">search by date</button>
+                <button id="btnTitle">Search by title</button>
             </span>
         </div>
+
+        <div class="search-cube" style="display:none">
+            <span class="searchBy">
+                <input type="date" class="starDateText" placeholder="Search by start date">
+            </span>
+            <span class="searchBy">
+                <input type="date" class="endDateText" placeholder="Search by end date">
+            </span>
+            <span class="searchBy">
+                <button id="btnRangeDate">Search by date range</button>
+            </span>
+        </div>
+
         <div class="moviesDetail"></div>
     </div>
 
@@ -488,35 +519,7 @@
         var moviesServer;
         var user;
         var isLogin;
-        //for (let movie of movies) {
-        //    const url = `https://localhost:7260/api/movies`;
-        //    const dataMovie = {
-        //        url: movie.url || "",
-        //        primaryTitle: movie.primaryTitle || "",
-        //        description: movie.description || "",
-        //        primaryImage: movie.primaryImage || "",
-        //        year: movie.startYear || 1900,
-        //        releaseDate: movie.releaseDate || "1900-01-01",
-        //        language: movie.language || "Unknown",
-        //        budget: movie.budget || 0,
-        //        grossWorldwide: movie.grossWorldwide || 0,
-        //        genres: Array.isArray(movie.genres) ? movie.genres.join(",") : "",
-        //        isAdult: movie.isAdult || false,
-        //        runtimeMinutes: movie.runtimeMinutes || 0,
-        //        averageRating: movie.averageRating || 0,
-        //        numVotes: movie.numVotes || 0
-        //    }
-        //    console.log(movie);
-        //    console.log(dataMovie);
-        //    ajaxCall("POST", url, JSON.stringify(dataMovie), SCB, ECB);
-        //    function SCB(res) {
-        //        console.log(res);
-        //    }
-        //    function ECB(res) {
-        //        console.log("moveis up load is failed");
 
-        //    }
-        //}
         $(document).ready(function () {
             uploadUser();
             $("#loadMovies").click(loadMoviesFromServer);
@@ -524,9 +527,7 @@
             $(".moviesDetail").on("click", ".deleteMovieBTN", delMovieServer);
             $("#btnTitle").on("click", searchTitle);
             $("#btnRangeDate").on("click", searchStartDate);
-
         });
-
 
         //hello messege for user or guest user
         function uploadUser() {
@@ -582,7 +583,7 @@
             }
 
             function ECB(err) {
-                console.log("Movies upload is failed", err); 
+                console.log("Movies upload is failed", err);
             }
         }
 
@@ -591,8 +592,11 @@
             moviesDetail.innerHTML = "";
             let btnLoadMovies = document.querySelector(".btnLoadMovies");
             btnLoadMovies.innerHTML = "";
-            let searchDiv = document.querySelector(".advencedSearch");
-            searchDiv.style.display = "inline-block";
+
+            // Show search cubes
+            document.querySelectorAll('.search-cube').forEach(cube => {
+                cube.style.display = 'flex';
+            });
 
             if (isLogin) {
                 document.querySelector('.addMovie').style.display = 'block';
@@ -616,8 +620,8 @@
                     let divImg = document.createElement("div");
                     divImg.classList.add("divImg");
                     let img = document.createElement("img");
-                    img.src = movie.primaryImage || 'placeholder.jpg'; 
-                    img.alt = movie.primaryTitle; 
+                    img.src = movie.primaryImage || 'placeholder.jpg';
+                    img.alt = movie.primaryTitle;
                     divImg.appendChild(img);
 
                     // Buttons (only for logged in users)
@@ -657,12 +661,12 @@
                     subTitle.appendChild(release);
 
                     let runtime = document.createElement("span");
-                    runtime.textContent = `${movie.runtimeMinutes || 'N/A'} min`; 
+                    runtime.textContent = `${movie.runtimeMinutes || 'N/A'} min`;
                     runtime.classList.add("block");
                     subTitle.appendChild(runtime);
 
                     let rating = document.createElement("span");
-                    rating.textContent = `${movie.averageRating || '0'}/10`; 
+                    rating.textContent = `${movie.averageRating || '0'}/10`;
                     rating.classList.add("block");
                     subTitle.appendChild(rating);
 
@@ -720,7 +724,7 @@
                         budgetTitle.innerText = "Budget:";
                         divBuget.appendChild(budgetTitle);
                         let budgetSpan = document.createElement("span");
-                        budgetSpan.innerText = `$${movie.budget.toLocaleString()}`; // הוספתי פורמט מספר
+                        budgetSpan.innerText = `$${movie.budget.toLocaleString()}`;
                         divBuget.appendChild(budgetSpan);
                         extra.appendChild(divBuget);
                     }
@@ -733,7 +737,7 @@
                         votesTitle.innerText = "Votes:";
                         divVotes.appendChild(votesTitle);
                         let votesSpan = document.createElement("span");
-                        votesSpan.innerText = movie.numVotes.toLocaleString(); // הוספתי פורמט מספר
+                        votesSpan.innerText = movie.numVotes.toLocaleString();
                         divVotes.appendChild(votesSpan);
                         extra.appendChild(divVotes);
                     }
@@ -747,7 +751,7 @@
                 const paginationContainer = document.createElement("div");
                 paginationContainer.classList.add("pagination");
 
-                const pageCount = Math.ceil(moviesServer.length / moviesPerPage); 
+                const pageCount = Math.ceil(moviesServer.length / moviesPerPage);
 
                 // Previous Button
                 const prevButton = document.createElement('button');
@@ -757,14 +761,14 @@
                 prevButton.addEventListener('click', () => {
                     if (currentPage > 1) {
                         currentPage--;
-                        renderMovies(); 
+                        renderMovies();
                         setupPagination();
                     }
                 });
                 paginationContainer.appendChild(prevButton);
 
                 // Page Number Buttons
-                const maxVisiblePages = 5; 
+                const maxVisiblePages = 5;
                 let startPage = Math.max(1, currentPage - 2);
                 let endPage = Math.min(pageCount, startPage + maxVisiblePages - 1);
 
@@ -831,7 +835,7 @@
                 nextButton.addEventListener('click', () => {
                     if (currentPage < pageCount) {
                         currentPage++;
-                        renderMovies(); 
+                        renderMovies();
                         setupPagination();
                     }
                 });
@@ -850,11 +854,11 @@
                 setupPagination();
             }
         }
+
         function sendToServer() {
             const newMovie = JSON.parse(this.dataset.movie);
             localStorage.setItem("movieId", JSON.stringify(newMovie.id));
             window.location.href = `RentMovie.html`;
-
         }
 
         function delMovieServer() {
@@ -889,6 +893,7 @@
 
             ajaxCall("GET", url, null, searchSCB, searchECB);
         }
+
         function searchSCB(response) {
             console.log(response);
             moviesServer = [];
@@ -918,12 +923,11 @@
             });
             loadMovies();
         }
+
         function searchECB(err) {
             alert("error in the search function");
             console.error(err);
         }
-
     </script>
-
 </body>
 </html>
