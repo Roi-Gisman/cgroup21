@@ -411,16 +411,16 @@
         function delFromCart() {
             const movie = $(this).data("movie");
             //const otherUserId = $("#userInput").val();
-            const url = `https://localhost:7260/api/movies/deleteFromCart/userId/${user.Id}/movieId/${movie.id}`;
+            const url = `https://localhost:7260/api/movies/deleteFromCart/userId/${user.id}/movieId/${movie.id}`;
 
             ajaxCall("DELETE", url, null,
                 function (moviesData) {
                     console.log("The movie deleted from the cart");
+                    window.location.reload();
                 },
                 function (err) {
                     console.log("the movie isn't deleted");
                 });
-            window.location.reload();
         }
 
         function getMoviesCart() {
@@ -665,16 +665,17 @@
                                     function (response) {
                                         alert(`Movie successfully sent to ${selectedUserName}!`);
                                         userSelectionForm.style.display = "none";
-                                        const urlDeleteMovie = `https://localhost:7260/api/movies/deleteFromCart/userId/${user.Id}/movieId/${movieData.id}`;
+                                        const urlDeleteMovie = `https://localhost:7260/api/movies/deleteFromCart/userId/${user.id}/movieId/${movieData.id}`;
 
                                         ajaxCall("DELETE", urlDeleteMovie, null,
                                             function (moviesData) {
                                                 console.log("The movie deleted from the cart");
+                                                window.location.reload();
+
                                             },
                                             function (err) {
                                                 console.log("the movie isn't deleted");
                                             });
-                                        window.location.reload();
                                     },
                                     function (error) {
                                         console.error("Error sending movie:", error);
