@@ -8,6 +8,7 @@ using System.Text;
 using WebApplication1.BL;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 
 /// <summary>
 /// DBServices is a class created by me to provides some DataBase Services
@@ -1076,53 +1077,58 @@ public class DBservices
     ////---------------------------------------------------------------------------------
     //// get movies by date
     ////---------------------------------------------------------------------------------
-    public Cart getCartDetail(int userId, int movieId)
+    public JsonElement getCartDetail(int userId, int movieId)
     {
-        Cart cart = new Cart();
+        JsonElement data;
         SqlConnection con;
 
         try
         {
-            con = connect("myProjDB"); // create the connection
+            con = connect("myProjDB");
         }
         catch (Exception ex)
         {
-            // write to log
             throw (ex);
         }
+
         SqlCommand cmd = new SqlCommand("SP_GetCart_2025", con);
         cmd.CommandType = CommandType.StoredProcedure;
         cmd.Parameters.AddWithValue("@UserId", userId);
         cmd.Parameters.AddWithValue("@MovieId", movieId);
 
-
         try
         {
             SqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read())
+            if (reader.Read())
             {
-                cart.UserId = (int)reader["userId"];
-                cart.MovieId = (int)reader["movieId"];
-                cart.RentEnd = DateOnly.FromDateTime(Convert.ToDateTime(reader["rentEnd"]));
-                cart.TotalPrice = Convert.ToDouble(reader["totalPrice"]);
+                var obj = new
+                {
+                    UserId = (int)reader["UserId"],
+                    MovieId = (int)reader["MovieId"],
+                    RentEnd = DateOnly.FromDateTime(Convert.ToDateTime(reader["RentEnd"])).ToString("yyyy-MM-dd"),
+                    TotalPrice = Convert.ToDouble(reader["TotalPrice"])
+                };
+
+                string jsonString = JsonSerializer.Serialize(obj);
+                data = JsonSerializer.Deserialize<JsonElement>(jsonString);
+                return data;
             }
-            return cart;
+
+            return default;
         }
         catch (Exception ex)
         {
-            // write to log
             throw (ex);
         }
-
         finally
         {
             if (con != null)
             {
-                // close the db connection
                 con.Close();
             }
         }
     }
+
 
     //---------------------------------------------------------------------------------
     // Create the SqlCommand

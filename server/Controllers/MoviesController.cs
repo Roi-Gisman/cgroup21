@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using WebApplication1.BL;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -55,7 +56,7 @@ namespace WebApplication1.Controllers
             return movies.GetMoviesForPages(page, pageSize);
         }
         [HttpGet("getDetailRent/userId/{userId:int}/movieId/{movieId:int}")]
-        public Cart getDetailRentMovie([FromRoute] int userId, [FromRoute] int movieId)
+        public JsonElement getDetailRentMovie([FromRoute] int userId, [FromRoute] int movieId)
         {
             Movie movies = new Movie();
             return movies.getDetailRentMovie(userId, movieId);
@@ -69,10 +70,14 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost("insertMovieToCart")] 
-        public int InsertMovieToCart([FromBody] Cart request)
+        public void InsertMovieToCart([FromBody] JsonElement data)
         {
+            int userId = data.GetProperty("userId").GetInt32();
+            int movieId = data.GetProperty("movieId").GetInt32();
+            DateOnly rentEnd = DateOnly.FromDateTime(Convert.ToDateTime(data.GetProperty("rentEnd"))); 
+            double totalPrice = Convert.ToDouble(data.GetProperty("totalPrice").GetDouble());
             Movie movie = new Movie();
-            return movie.InsertMovieToCart(request.UserId, request.MovieId, request.RentEnd, request.TotalPrice);
+            movie.InsertMovieToCart(userId, movieId, rentEnd, totalPrice);
         }
 
         // DELETE api/<MoviesController>/5
